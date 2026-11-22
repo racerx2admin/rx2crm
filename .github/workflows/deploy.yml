@@ -1,0 +1,41 @@
+# Deploys to Vercel on every push to main, and runs the checks on pull requests.
+# Vercel's own Git integration can't see this repo (it belongs to a different
+# GitHub account than the Vercel login), so GitHub Actions does the deploy.
+# Needs one repo secret: VERCEL_TOKEN (Vercel > Account settings > Tokens).
+name: Check and deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  VERCEL_ORG_ID: team_yhhDfszwa763bcgK5MqRIt2d
+  VERCEL_PROJECT_ID: prj_GDt3ueeAvT0wsgzaNEbcy2KdnXf3
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run typecheck
+
+  deploy:
+    needs: check
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --global vercel@latest
+      - run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
