@@ -13,7 +13,7 @@ A student picks a source (similar to a past sponsor, local businesses, or corpor
    - `TAVILY_API_KEY` (tavily.com, free tier is 1,000 searches a month)
    - `APP_PASSWORD` (the shared team password)
 3. **Run locally:** `npm install`, then `npm run dev`.
-4. **Deploy:** import the repo in Vercel and add the same variables under Settings > Environment Variables.
+4. **Deploy:** the Vercel project `rx2crm` lives in Tom's Vercel team. Add the same variables there under Settings > Environment Variables. GitHub Actions deploys every push to `main` (`.github/workflows/deploy.yml`) and needs one repo secret, `VERCEL_TOKEN`.
 
 ## How a run works
 
